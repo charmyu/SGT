@@ -1,0 +1,289 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+ 
+    <title>上海恒劲动力科技有限公司</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link href="../js/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min93e3.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerGrid.js"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerToolBar.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/Jquery/ligerUI/LV.js"></script>
+    <script src="../../js/json2.js"></script>
+    <script src="../js/jquery/ligerUI/ligerui.all.js"></script>
+    <script src="../js/jquery/jquery.form.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/lib/ligerUI/js/core/inject.js" type="text/javascript"></script>
+
+    <script src="../js/Jquery/ligerUI/core/inject.js"></script>
+    <script src="../js/Jquery/ligerUI/js/plugins/ligerCheckBox.js" type="text/javascript"></script>
+    <script src="../js/Jquery/ligerUI/js/plugins/ligerButton.js" type="text/javascript"></script>
+    <script src="../js/Jquery/ligerUI/js/plugins/ligerListBox.js" type="text/javascript"></script>
+
+    
+    <style type="text/css">
+                        .middle input {
+                               display: block;
+                    width: 30px;
+                    margin: 2px;
+                }
+      
+    </style>
+
+</head>
+<body>
+
+    <div>
+        <div class="col-sm-10">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>设置模板参数信息</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" role="form">
+                        <table style="width: 100%; margin: 10px auto" class="tableForm">
+                            <tr>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label">模板名称：</label>
+                                    </div>
+                                    <div class="form-group">
+
+                                        <div class="col-sm-6">
+                                            <div id="listbox3" class="l-listbox" style="width: 350px; ">
+                                                <div class="l-listbox-inner">
+                                                    <table cellpadding="0" cellspacing="0" border="0" class="l-listbox-table l-table-checkbox"></table>
+                                                </div><input type="hidden" name="listbox3_val" id="listbox3_val" data-ligerid="listbox3">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label">模板可选参数：</label>  
+                                    </div>
+                                    <div class="form-group">                                       
+                                        <div class="col-sm-6">
+                                            <div id="listbox1" class="l-listbox" style="width: 350px; "><div class="l-listbox-inner">
+                                                <table cellpadding="0" cellspacing="0" border="0" class="l-listbox-table l-table-checkbox">
+                                                    </table></div>
+                                            <input type="hidden" name="listbox1_val" id="listbox1_val" data-ligerid="listbox1"></div>
+                                            
+                                        </div>
+                                    </div>
+                                </td> <td>
+                                          <div class="form-group">
+                                              <button type="button" onclick="moveToLeft()" class="btn btn-w-m btn-primary">&nbsp;&nbsp;《&nbsp;&nbsp;</button><br />
+                                              <button type="button" onclick="moveToRight()" class="btn btn-w-m btn-primary">&nbsp;&nbsp;》&nbsp;&nbsp;</button><br />
+                                              <button type="button" onclick="moveAllToLeft()" class="btn btn-w-m btn-primary">&nbsp;&nbsp;《《&nbsp;&nbsp;</button><br />
+                                              <button type="button" onclick="moveAllToRight()" class="btn btn-w-m btn-primary">&nbsp;&nbsp;》》&nbsp;&nbsp;</button><br />
+
+                                          </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="col-sm-6 control-label">模板已选参数：</label>
+                                    </div>
+                                    <div class="form-group">
+                                       
+                                        <div class="col-sm-6">
+                                            <div id="listbox2" class="l-listbox" style="width: 350px; ">
+                                                <div class="l-listbox-inner">
+                                                    <table cellpadding="0" cellspacing="0" border="0" class="l-listbox-table l-table-checkbox"></table>
+                                                </div><input type="hidden" name="listbox2_val" id="listbox2_val" data-ligerid="listbox2">
+                                            </div>
+                                            </div>
+                                        </div>
+                                </td></tr></table>
+
+                                    <!--<div class="hr-line-dashed"></div>-->
+                                    <div class="form-group">
+                                        <button id="btnSave" onclick="Save()" class="btn btn-primary col-sm-offset-4">&nbsp;&nbsp;保存&nbsp;&nbsp;</button>
+                                        <button id="btnCancel" onclick="Empty()" class="btn btn-danger col-sm-offset-1">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
+                                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+</body>
+</html>
+<script type="text/javascript">
+
+
+   
+    var TempletData = [];
+    var Templetinparam = [];
+    var Templetoutparam = [];
+
+    $(function () {
+        GetTempletData();
+      //  GetTempletInParam();
+       // GetTempletOutParam();
+
+    });
+
+    //获取模板数据
+    function GetTempletData() {
+        $.ajax({
+            type: "GET",
+            url: "/api/Templet/GetAllTemplet",
+            dataType: "json",
+            success: function (data) {
+                var result = eval("(" + data + ")");
+                $(result.Rows).each(function (key) {
+                    TempletData.push({
+                        id: result.Rows[key].ID,
+                        text: result.Rows[key].templetname
+                    });
+                    
+                });
+                bindListBox();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    //获取模板已有参数
+    function GetTempletInParam(templetid) {
+        $.ajax({
+            type: "GET",
+            url: "/api/TempletParameter/GetTempletParam?templet=" + templetid + "&mark=in",
+            dataType: "json",
+            success: function (data) {
+                var result = eval("(" + data + ")");
+                Templetinparam = [];
+                $(result.Rows).each(function (key) {
+                    Templetinparam.push({
+                        id: result.Rows[key].ID,
+                        text: result.Rows[key].templetname
+                    });
+                });
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+    //获取模板没有参数
+    function GetTempletOutParam(templetid) {
+        $.ajax({
+            type: "GET",
+            url: "/api/TempletParameter/GetTempletParam?templet=" + templetid + "&mark=out",
+            dataType: "json",
+            success: function (data) {
+                var result = eval("(" + data + ")");
+                Templetoutparam = [];
+                $(result.Rows).each(function (key) {
+                    Templetoutparam.push({
+                        id: result.Rows[key].ID,
+                        text: result.Rows[key].parametername
+                    });
+                });
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+
+
+
+ function bindListBox() {
+        $("#listbox1,#listbox2,#listbox3").ligerListBox({
+            isShowCheckBox: true,
+            isMultiSelect: true,
+            height: 300,
+            width:200
+        });
+        $("#listbox3").ligerListBox({
+            isShowCheckBox: false,
+            isMultiSelect: false,
+            height: 300,
+            width: 200,
+            onSelected: function (item) {
+                var box1 = liger.get("listbox1"), box2 = liger.get("listbox2");
+                box1.clear();
+                box1.clearContent();
+                box2.clear();
+                box2.clearContent();
+             
+                if (item != null) {
+                   
+                    GetTempletInParam(item.id);
+                    GetTempletOutParam(item.id);
+                    box1.setData(Templetinparam);
+                    box2.setData(Templetoutparam);
+                }
+                
+            }
+        });
+
+        liger.get("listbox3").setData(TempletData);
+    };
+    function moveToLeft() {
+        var box1 = liger.get("listbox1"), box2 = liger.get("listbox2");
+        var selecteds = box2.getSelectedItems();
+        if (!selecteds || !selecteds.length) return;
+        box2.removeItems(selecteds);
+        box1.addItems(selecteds);
+    }
+    function moveToRight() {
+        var box1 = liger.get("listbox1"), box2 = liger.get("listbox2");
+        var selecteds = box1.getSelectedItems();
+        if (!selecteds || !selecteds.length) return;
+        box1.removeItems(selecteds);
+        box2.addItems(selecteds);
+    }
+    function moveAllToLeft() {
+        var box1 = liger.get("listbox1"), box2 = liger.get("listbox2");
+        var selecteds = box2.data;
+        if (!selecteds || !selecteds.length) return;
+        box1.addItems(selecteds);
+        box2.removeItems(selecteds);
+    }
+    function moveAllToRight() {
+        var box1 = liger.get("listbox1"), box2 = liger.get("listbox2");
+        var selecteds = box1.data;
+        if (!selecteds || !selecteds.length) return;
+        box2.addItems(selecteds);
+        box1.removeItems(selecteds);
+
+    }
+
+
+    function Save() {
+        var box1 = liger.get("listbox1");
+        var selecteds = box1.getSelectedItems();
+        if (!selecteds || !selecteds.length)
+        { return; }
+        else
+        {
+            $(selecteds).each(function (key) {
+                Templetoutparam.push({
+                    id: result.Rows[key].ID,
+                    text: result.Rows[key].parametername
+                });
+            });
+        }
+
+
+        alert("选择的是: " + text1 + "," + text2 + "," + text3);
+
+
+    }
+</script>

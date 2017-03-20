@@ -1,0 +1,366 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/animate.min.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css" />   
+    <script src="http://webapi.amap.com/maps?v=1.3&key=18170055e97cf7a59fe1a44b350b2918&callback=init"></script>
+    <script src="../js/common.js"></script>
+    <link href="../js/ztree/css/demo.css" rel="stylesheet" />
+    <link href="../js/ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="../js/ztree/js/jquery.ztree.core.js"></script>
+
+
+    <style>
+                html, body {
+                    margin: 0;
+                    height: 100%;
+                    width: 100%;
+                    position: absolute;
+                }
+
+                #container {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                .button-group {
+                    position: absolute;
+                    bottom: 20px;
+                    right: 20px;
+                    font-size: 12px;
+                    padding: 10px;
+                }
+
+                /*
+        .tip {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            background-color: #FFF;
+            text-align: center;
+            border: 1px solid #ccc;
+            line-height: 30px;
+            border-radius: 3px;
+            padding: 0 5px;
+            font-size: 12px;
+        }
+        */
+        #tip {
+            background-color: #fff;
+            padding-left: 10px;
+            padding-right: 10px;
+            position: absolute;
+            font-size: 12px;
+            right: 10px;
+            top: 0px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            line-height: 30px;
+            width:1100px;
+        }
+
+                /*
+        #tip input[type='button'] {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background-color: #0D9BF2;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 3px;
+            outline: none;
+            border: 0;
+        }
+        */
+
+    </style>
+    <script type="text/javascript">
+
+        $(function () {
+            $.ajax({
+                type: "GET",
+                url: "/api/Sys_User/GetLoginInfo",
+                dataType: "json",
+                success: function (result) {
+                    if (result != "") {
+                        var user = eval("(" + result + ")");
+                        //  $("#lblUsername").html(user.UserName);
+
+                        bindTree();
+
+                        if (name != "") {
+                            $("#name").val(name);
+                        }
+                        if (NO != "") {
+                            $("#NO").val(NO);
+                        }
+                        if (dID != "") {
+                            $("#department").val(dID);
+                        }
+                        if (dname != "") {
+                            $("#citySel").val(dname);
+                        }
+                        loadData();
+                    }
+                    else {
+                        location.href = "../login.html";
+                    }
+                },
+                error: function (error) {
+
+                }
+            });
+        });
+
+        var setting = {
+            view: {
+                dblClickExpand: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: onClick
+            }
+        };
+
+
+        function onClick(e, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+			nodes = zTree.getSelectedNodes(),
+			v = "";
+            nodes.sort(function compare(a, b) { return a.id - b.id; });
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                v = nodes[i].name;
+                $("#department").val(nodes[i].id);
+            }
+            //if (v.length > 0 ) v = v.substring(0, v.length-1);
+            var cityObj = $("#citySel");
+            cityObj.attr("value", v);
+            hideMenu();
+        }
+
+        function showMenu() {
+            var cityObj = $("#citySel");
+            var cityOffset = $("#citySel").offset();
+            $("#menuContent").css({ left: cityOffset.left + "px", top: cityOffset.top + cityObj.outerHeight() + "px" }).slideDown("fast");
+
+            $("body").bind("mousedown", onBodyDown);
+        }
+        function hideMenu() {
+            $("#menuContent").fadeOut("fast");
+            $("body").unbind("mousedown", onBodyDown);
+        }
+        function onBodyDown(event) {
+            if (!(event.target.id == "citySel" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length > 0)) {
+                hideMenu();
+            }
+        }
+             
+
+        //绑定机构treeview
+        function bindTree() {
+            $.ajax({
+                type: "POST",
+                url: "/api/Department/DepartmentByUser",
+                dataType: "json",
+                success: function (data) {
+                    var jsonstr = "[]";
+                    var jsonarray = eval('(' + jsonstr + ')');
+                    var zNodes;
+                    var result = eval("(" + data + ")");
+                    $(result.Rows).each(function (key) {
+
+                        var node = { "id": "" + result.Rows[key].Dep_ID + "", "pId": "" + result.Rows[key].Dep_Parent + "", "name": "" + result.Rows[key].Dep_Name + "", "open": "true" };
+                        jsonarray.push(node);
+                    });
+
+
+                    $.fn.zTree.init($("#treeDemo"), setting, jsonarray);
+                },
+                error: function (data) {
+                    swal('提示', 'TREE绑定出错！', 'error');
+                }
+            });
+
+        }
+
+    </script>
+
+</head>
+<body>
+    <div id="container"></div>
+    <div id="tip" >
+        <label style="float: left;">用户机构：</label>
+        <div style="float: left;margin:0 6px;width:250px;">
+            <div class="col-sm-3">
+                <input id="citySel" type="text" name="citySel" onclick="showMenu(); return false;" class="form-control" readonly value="" style="width:200px;" />
+
+            </div>
+            <div id="menuContent" class="menuContent" style="display:none; position: absolute; z-index:100">
+                <ul id="treeDemo" class="ztree" style="margin-top:0; width:200px;"></ul>
+            </div>
+            <input id="department" type="hidden" />
+        </div>
+        <label style="float: left;">基站名称：</label>
+        <div style="float: left;margin:0 6px;width:180px;">
+            <input type="text" id="name" placeholder="设备序列号" style="width: 150px;" class=" form-control">
+
+        </div>
+        <label style="float: left;">设备序列号：</label>
+        <div style="float: left;margin:0 6px;width:180px;">
+            <input type="text" id="NO" placeholder="设备序列号" style="width: 150px;" class=" form-control">
+
+        </div>
+        <button id="btnSearch" class="btn btn-success" onclick="f_search()"><i class="icon-magnifier"></i>搜索</button>
+        <button id="btndata" class="btn btn-success" onclick="f_sdata()"><i class="icon-magnifier"></i>前往数据简表</button>
+        </div>
+</body>
+</html>
+<script>
+
+
+    var name = getQueryStringByName("sname");
+    var NO = getQueryStringByName("NO");
+    var dID = getQueryStringByName("depID");
+    var dname = getQueryStringByName("depname");
+    var map;
+    var markers = [];
+   // 初始化地图对象，加载地图
+    try {
+        //map = new AMap.Map("container", { resizeEnable: true, zoom: 11, center: [121.09826, 31.167688] });
+        var map = new AMap.Map('container', {
+            resizeEnable: true,
+            zoom: 11,
+            center: [121.09826, 31.167688]
+        });
+    } catch (e) {
+
+    }
+   
+  
+    //获取设备
+    function loadData() {
+
+        name = $("#name").val();
+        NO = $("#NO").val();
+        dID = $("#department").val();
+        dname=$("#citySel").val();
+        //getRootPath();
+        $.ajax({
+            type: "GET",
+            url: "/api/Device/GetDeviceByDepId?depID=" + dID + "&sname=" + name + "&NO=" + NO ,
+            dataType: "json",
+            success: function (data) {
+                if (data != "") {
+                    if (markers.length >0) {
+                        map.remove(markers);
+                    }
+                    result = eval("(" + data + ")");
+                    $(result.Rows).each(function (key) {
+
+                        var dval = ""; var img = "";
+                        if (result.Rows[key].state == 0) {
+                            dval = "待机";
+                            img = "../images/orange.png";
+                        }
+                        else if (result.Rows[key].state == 1) {
+                            dval = "启动";
+                            img = "../images/green.png";
+                        }
+                        else if (result.Rows[key].state == 2) {
+                            dval = "运行";
+                            img = "../images/blue.png";
+                        }
+                        else if (result.Rows[key].state == 3) {
+                            dval = "停机";
+                            img = "../images/red.png";
+                        }
+
+
+                        var lnglats = [result.Rows[key].N, result.Rows[key].E];
+                        var marker = new AMap.Marker({
+                            icon: img,
+                            position: lnglats,
+                            map: map
+                        });
+
+                        //           marker.content = '<div style="width: 300px;" class="ibox float-e-margins"><div class="ibox-title"><h3><a target="_blank" href="DeviceImg.html?UID=' + result.Rows[key].ID + '">' + result.Rows[key].stationname + '</a>: ' + dval + '</h3></div>' +
+                        //'<div class="ibox-content no-padding"><div><ul class="list-group"><li class="list-group-item">设备名称:' + result.Rows[key].name + '</li>' +
+                        //'<li class="list-group-item"> 序列号:' + result.Rows[key].SerialNo + '</li>' +
+                        //'<li class="list-group-item"> 分机号码:' + result.Rows[key].phone + '</li></ul></div></div>';
+                        //           marker.on('click', markerClick);
+                        //           marker.emit('click', { target: marker });
+
+                        //var url = "DeviceImg.html?UID=" + result.Rows[key].ID;
+
+                        var contentstr = "<a  href=\"javascript:addtab('" + result.Rows[key].ID + "');\">" + result.Rows[key].stationname + "</a>";
+                        //var contentstr = '<a  href="javascript:addtab(\'' + result.Rows[key].ID + '\');">' + result.Rows[key].stationname + '</a>';
+
+                        // 设置label标签
+                        marker.setLabel({//label默认蓝框白底左上角显示，样式className为：amap-marker-label
+                            offset: new AMap.Pixel(10, 40),//修改label相对于maker的位置
+                            content: contentstr
+                        });
+                        markers.push(marker);
+                    });
+                }
+              
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+
+    //map.setFitView();
+
+    function addtab(url) {
+        parent.f_addTab("14", "设备详情", "Device/DeviceImg.html?UID=" + url);
+    }
+
+
+    function f_search() {
+        loadData();
+    }
+    function f_sdata() {
+        parent.f_addTab("21", "设备数据简表", "DataManager/DeviceData.html?depID=" + $("#department").val() + "&sname=" + $("#name").val() + "&NO=" + $("#NO").val() + "&depname=" + $("#citySel").val());
+    }
+
+
+
+
+    var localhostPaht = "";
+    //js获取项目根路径，如： http://localhost:8083/uimcardprj
+    function getRootPath() {
+        //获取当前网址，如： http://localhost:8083/uimcardprj/share/meun.jsp
+        var curWwwPath = window.document.location.href;
+        //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+        var pathName = window.document.location.pathname;
+        var pos = curWwwPath.indexOf(pathName);
+        //获取主机地址，如： http://localhost:8083
+        localhostPaht = curWwwPath.substring(0, pos);
+        //获取带"/"的项目名，如：/uimcardprj
+        var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+        return (localhostPaht + projectName);
+    }
+</script>
+
+
+   

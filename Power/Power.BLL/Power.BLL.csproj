@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8A4DC5FB-402A-4938-9DBA-00C13A629999}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Power.BLL</RootNamespace>
+    <AssemblyName>Power.BLL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BLL\Communication.cs" />
+    <Compile Include="BLL\Device.cs" />
+    <Compile Include="BLL\Device_CMD.cs" />
+    <Compile Include="BLL\EventLog.cs" />
+    <Compile Include="BLL\HistoricalData.cs" />
+    <Compile Include="BLL\Log.cs" />
+    <Compile Include="BLL\Maintenance.cs" />
+    <Compile Include="BLL\MenuInfo.cs" />
+    <Compile Include="BLL\Module.cs" />
+    <Compile Include="BLL\Parameter.cs" />
+    <Compile Include="BLL\ParameterType.cs" />
+    <Compile Include="BLL\RT_APoint.cs" />
+    <Compile Include="BLL\RT_CPoint.cs" />
+    <Compile Include="BLL\RT_DPoint.cs" />
+    <Compile Include="BLL\Sys_Department.cs" />
+    <Compile Include="BLL\Sys_User.cs" />
+    <Compile Include="BLL\Sys_UserType.cs" />
+    <Compile Include="BLL\Templet.cs" />
+    <Compile Include="BLL\TempletPara.cs" />
+    <Compile Include="BLL\User_Menu.cs" />
+    <Compile Include="DAL\Communication.cs" />
+    <Compile Include="DAL\Device.cs" />
+    <Compile Include="DAL\Device_CMD.cs" />
+    <Compile Include="DAL\EventLog.cs" />
+    <Compile Include="DAL\HistoricalData.cs" />
+    <Compile Include="DAL\Log.cs" />
+    <Compile Include="DAL\Maintenance.cs" />
+    <Compile Include="DAL\MenuInfo.cs" />
+    <Compile Include="DAL\Module.cs" />
+    <Compile Include="DAL\Parameter.cs" />
+    <Compile Include="DAL\ParameterType.cs" />
+    <Compile Include="DAL\RT_APoint.cs" />
+    <Compile Include="DAL\RT_CPoint.cs" />
+    <Compile Include="DAL\RT_DPoint.cs" />
+    <Compile Include="DAL\Sys_Department.cs" />
+    <Compile Include="DAL\Sys_User.cs" />
+    <Compile Include="DAL\Sys_UserType.cs" />
+    <Compile Include="DAL\Templet.cs" />
+    <Compile Include="DAL\TempletPara.cs" />
+    <Compile Include="DAL\User_Menu.cs" />
+    <Compile Include="DBUtility\Class1.cs" />
+    <Compile Include="DBUtility\CommandInfo.cs" />
+    <Compile Include="DBUtility\DbHelperSQL.cs" />
+    <Compile Include="DBUtility\DESEncrypt.cs" />
+    <Compile Include="DBUtility\PubConstant.cs" />
+    <Compile Include="DBUtility\SQLHelper.cs" />
+    <Compile Include="Model\Communication.cs" />
+    <Compile Include="Model\Device.cs" />
+    <Compile Include="Model\Device_CMD.cs" />
+    <Compile Include="Model\EventLog.cs" />
+    <Compile Include="Model\HistoricalData.cs" />
+    <Compile Include="Model\Log.cs" />
+    <Compile Include="Model\Maintenance.cs" />
+    <Compile Include="Model\MenuInfo.cs" />
+    <Compile Include="Model\Module.cs" />
+    <Compile Include="Model\Parameter.cs" />
+    <Compile Include="Model\ParameterType.cs" />
+    <Compile Include="Model\RT_APoint.cs" />
+    <Compile Include="Model\RT_CPoint.cs" />
+    <Compile Include="Model\RT_DPoint.cs" />
+    <Compile Include="Model\Sys_Department.cs" />
+    <Compile Include="Model\Sys_User.cs" />
+    <Compile Include="Model\Sys_UserType.cs" />
+    <Compile Include="Model\Templet.cs" />
+    <Compile Include="Model\TempletPara.cs" />
+    <Compile Include="Model\User_Menu.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

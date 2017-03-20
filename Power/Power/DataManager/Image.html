@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/animate.min.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/jquery.min.js?v=2.1.4"></script>
+    <script src="../js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="../js/plugins/layer/layer.min.js"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/common.js"></script>
+    <style>
+        div#div1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            z-index: -1;
+        }
+
+            div#div1 > img {
+                height: 100%;
+                width: 100%;
+                border: 0;
+            }
+    </style>
+    <script>
+        var UID = getQueryStringByName("Uid");
+        $(function () {
+            $("#devrunImg").attr('src', "../images/weihu/"+UID);
+
+        });
+
+    </script>
+</head>
+<body>
+    <div id="div1">
+        <img id="devrunImg" src="" />
+    </div>
+</body>
+</html>

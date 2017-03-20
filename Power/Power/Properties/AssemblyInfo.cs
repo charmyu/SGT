@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Power")]
-[assembly: AssemblyCopyright("版权所有(C)  2017")]
+[assembly: AssemblyCopyright("版权所有(C)  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于 typelib 的 ID
-[assembly: Guid("34477734-192b-45ba-8685-3ccb257a9c04")]
+[assembly: Guid("a645b3aa-44f7-4e9e-ab7c-7ea129cc1c1e")]
 
 // 程序集的版本信息由下列四个值组成:
 //

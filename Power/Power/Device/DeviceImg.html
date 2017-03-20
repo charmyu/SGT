@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/animate.min.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+
+    <script src="../js/jquery.min.js?v=2.1.4"></script>
+    <script src="../js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="../js/plugins/layer/layer.min.js"></script>
+    <script src="../js/plugins/iCheck/icheck.min.js"></script>
+    <script src="../js/plugins/layer/laydate/laydate.js"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/common.js"></script>
+    <link href="../css/StyleSheet1.css" rel="stylesheet" />
+    
+    <style>
+        div#div1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            z-index: -1;
+        }
+
+            div#div1 > img {
+                height: 100%;
+                width: 100%;
+                border: 0;
+            }
+    </style>
+</head>
+<body>
+    <form id="form1">
+        <div id="div1">
+            <img id="devrunImg"  src="../images/氢能路线1-有市电时.gif" />
+        </div>
+        <div id="rr2" style="width:200px;height:60px;top:20px; right:10px; z-index:2;position:absolute;">
+            <input id="Button1" onclick="Dialog()" class="btn btn-primary col-sm-offset-4" type="button" value=" 设备详细信息 " />
+            <input id="Button2" onclick="c_Dialog()" class="btn btn-primary col-sm-offset-4" type="button" value="  设备配置  " />
+            <input id="Button3" onclick="Command()" class="btn btn-primary col-sm-offset-4" type="button" value=" 发送命令 " /> 
+        </div>
+
+        <div id="rr3" style="width:100px;height:60px;top:10%; left:8%; z-index:2;position:absolute;">
+            <ul id="sd" class="list-group"></ul>
+            </div>
+        <div id="rr3" style="width:150px;height:60px;top:65%; left:6%; z-index:2;position:absolute;">
+            <ul id="qy" class="list-group"></ul>
+        </div>
+        <div id="rr3" style="width:100px;height:60px;top:25%; left:60%; z-index:2;position:absolute;">
+            <ul id="fz" class="list-group"></ul>
+        </div>
+</form>
+</body>
+</html>
+<script>
+
+ 
+    var UID = getQueryStringByName("UID");
+    $(function () {     
+        getData(); 
+    });
+    function Dialog() {
+        $.ligerDialog.open({ width: 850, height: 500, url: 'DeviceInfo.html?Uid=' + UID, title: "设备参数信息" });
+    }
+    function c_Dialog() {
+        $.ligerDialog.open({ width: 850, height: 500, url: 'DeviceSetParameter.html?Uid=' + UID, title: "设备配置" });
+    }
+    function Command() {
+        $.ajax({
+            type: "GET",
+            url: "/api/RT_CPoint/SetParameter",
+            dataType: "json",
+            success: function (data) {
+                if (data == true)
+                    alert("请求发送成功");
+            },
+            error: function (error) {
+            }
+        });
+    }
+    function getData() {
+        $.ajax({
+            type: "GET",
+            url: "/api/SelectData/GetDeviceData?deviceId=" + UID,
+            dataType: "json",
+            success: function (data) {
+                var result = eval("(" + data + ")");
+                var lisd = $("#sd");
+                var liqy = $("#qy");
+                 var lifz = $("#fz");
+                var dval = "";
+                    if (result.Rows[0].state  == 0) {
+                        dval = "待机";
+                        $("#devrunImg").attr('src', "../images/氢能路线1-有市电时.gif");
+                    }
+                    else if (result.Rows[0].state == 1) {
+                        dval = "启动";
+                        $("#devrunImg").attr('src', "../images/氢能路线2-停电时.gif");
+                    }
+                    else if (result.Rows[0].state == 2) {
+                        dval = "运行";
+                        $("#devrunImg").attr('src', "../images/氢能路线3-无市电时.gif");
+                    }
+                    else if (result.Rows[0].state == 3) {
+                        dval = "停机";
+                        $("#devrunImg").attr('src', "../images/氢能路线0.jpg");
+                    }
+                
+                $(result.Rows).each(function (key) {
+
+                    if (result.Rows[key].parametertypeid == "1") {
+                        var strv = "";
+                        if (result.Rows[key].TargetID == 1) {
+                            if (result.Rows[key].LowVal != '-' && result.Rows[key].HighVal != '-') {
+                                if (result.Rows[key].LowVal < result.Rows[key].RTVal && result.Rows[key].HighVal > result.Rows[key].RTVal) {
+                                    strv = '<li style="width:200px;" class="list-group-item ">1 ' + result.Rows[key].parametername + '<span class="badge badge-info">' + result.Rows[key].RTVal + '</span></li>';
+                                }
+                                else {
+                                    strv = '<li style="width:200px;" class="list-group-item ">1 ' + result.Rows[key].parametername + '<span class="badge badge-danger">' + result.Rows[key].RTVal + '</span></li>';
+                                }
+                            }
+                            else {
+                                strv = '<li style="width:200px;" class="list-group-item ">1 ' + result.Rows[key].parametername + '<span class="badge badge-info">' + result.Rows[key].RTVal + '</span></li>';
+                            }
+
+                            liqy.append(strv);
+                        }
+                        else if (result.Rows[key].TargetID == 2) {
+
+                            if (result.Rows[key].LowVal != '-' && result.Rows[key].HighVal != '-') {
+                                if (result.Rows[key].LowVal < result.Rows[key].RTVal && result.Rows[key].HighVal > result.Rows[key].RTVal) {
+                                    strv = '<li style="width:150px;" class="list-group-item ">2 ' + result.Rows[key].parametername + '<span class="badge badge-info">' + result.Rows[key].RTVal + '</span></li>';
+                                }
+                                else {
+                                    strv = '<li style="width:150px;" class="list-group-item ">2 ' + result.Rows[key].parametername + '<span class="badge badge-danger">' + result.Rows[key].RTVal + '</span></li>';
+                                }
+                            }
+                            else {
+                                strv = '<li style="width:150px;" class="list-group-item ">2 ' + result.Rows[key].parametername + '<span class="badge badge-info">' + result.Rows[key].RTVal + '</span></li>';
+                            }
+                            lifz.append(strv);
+                        }
+                        else if (result.Rows[key].TargetID == 3) {
+                            if (result.Rows[key].LowVal != '-' && result.Rows[key].HighVal != '-') {
+                                if (result.Rows[key].LowVal < result.Rows[key].RTVal && result.Rows[key].HighVal > result.Rows[key].RTVal) {
+                                    strv = '<li style="width:150px;" class="list-group-item ">3 ' + result.Rows[key].parametername + '<span class="badge badge-info">' + result.Rows[key].RTVal + '</span></li>';
+                                }
+                                else {
+                                    strv = '<li style="width:150px;" class="list-group-item ">3 ' + result.Rows[key].parametername + '<span class="badge badge-danger">' + result.Rows[key].RTVal + '</span></li>';
+                                }
+                            }
+                            else {
+                                strv = '<li style="width:150px;" class="list-group-item ">3 ' + result.Rows[key].parametername + '<span class="badge badge-info">' + result.Rows[key].RTVal + '</span></li>';
+                            }
+
+                            lisd.append(strv);
+                        }
+                    }
+           
+                
+                });
+               
+              
+
+            },
+            error: function (error) {
+
+            }
+        });
+
+    }
+
+
+</script>

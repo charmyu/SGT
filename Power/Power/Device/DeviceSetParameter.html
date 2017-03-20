@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+
+
+    <link href="../css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="../css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../css/animate.min.css" rel="stylesheet">
+    <link href="../css/common.css" rel="stylesheet">
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="../js/plugins/layer/laydate/need/laydate.css">
+    <link type="text/css" rel="stylesheet" href="../js/plugins/layer/laydate/skins/default/laydate.css">
+    <script src="../js/jquery.min.js?v=2.1.4"></script>
+    <script src="../js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="../js/plugins/layer/layer.min.js"></script>
+    <script src="../js/plugins/iCheck/icheck.min.js"></script>
+    <script src="../js/plugins/layer/laydate/laydate.js"></script>
+
+    <script src="../js/common.js"></script>
+
+</head>
+<body>
+    <form id="form1">
+        <div class="ibox-title">
+            <span style="font-size:20px;" class="badge badge-info"> 系统参数</span>
+           
+            <div style="float: right; margin: 0 6px; width: 200px;">
+                <select id="ddlmodule" class="form-control" style="width: 200px;"></select>
+            </div><label style="float:right;">模块：</label>
+        </div>
+
+        <div class="ibox-content" style="vertical-align:top;">
+            <div class="form-group">
+                <table style="width:98%;">
+                    <tr style="vertical-align:top;">
+                        <td id="title" class="list-group"></td>
+                        <td id="setV" class="list-group"></td>
+                        <td id="confirm" class="list-group"></td>
+                    </tr>
+                </table>
+                
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+<script>
+    var UID = getQueryStringByName("UID");
+    $(function () {
+        ddlBind();
+    });
+    function ddlBind() {
+        $.ajax({
+            type: "POST",
+            url: "/api/Module/ModuleByDeviceId?deviceid=" + UID,
+            dataType: "json",
+            success: function (data) {
+                $("#ddlmodule").empty();
+                var ddl = $("#ddlmodule");
+                var result = eval("(" + data + ")");
+                $(result.Rows).each(function (key) {
+                    ddl.append('<option value="' + result.Rows[key].NO + '">' + result.Rows[key].ModuleName + '</option>');
+                });
+                loadData($("#ddlmodule").val());
+                ddl.bind("change", function () {
+                    loadData($("#ddlmodule").val());
+                });
+            },
+            error: function (data) {
+                swal("下拉框绑定出错！");
+            }
+        });
+    }
+
+   function loadData(SendID) {
+        $.ajax({
+            type: "GET",
+            url: "/api/Parameter/GetAllParameter?deviceId=" + UID+"&SendID=" + SendID,
+            dataType: "json",
+            success: function (data) {
+                var result = eval("(" + data + ")");
+                var rtai = $("#title");
+                var rtdi = $("#setV");
+                var rtcvm = $("#confirm");
+                rtai.html("");
+                rtdi.html("");
+                rtcvm.html("");
+                $(result.Rows).each(function (key) {
+                    if (result.Rows[key].parametertypeid == "3") {
+                        rtai.append(' <label class="col-sm-4 control-label">' + result.Rows[key].parametername + '</label>');
+                        var tid = "txt" + result.Rows[key].parameterID;
+                        rtdi.append('<div class="col-sm-5"><input id="' + tid + '" type="text"  class="form-control"/></div>');
+                        rtcvm.append("<span><input  type='button' value='确定'class='btn btn-primary' onclick=\"setData('" + result.Rows[key].ModuleID + "','" + result.Rows[key].parameterID + "','" + tid + "')\"/></span>");
+                       // alert(rtcvm.html());
+                    }
+                });
+            },
+            error: function (error) {
+            }
+        });
+   }
+
+   function setData(data1,data2,data3) {
+      var val=$("#"+data3+"").val();
+       $.ajax({
+           type: "POST",
+           url: "/api/RT_CPoint/s?ModuleID=" + data1 + "&prarmeterID=" + data2 + "&SetVal=" + val,
+           dataType: "json",
+           success: function (data) {
+               if (data == true)
+                   alert("参数设置成功");
+           },
+           error: function (data) {
+           }
+       });
+   }
+
+
+</script>

@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>上海恒劲动力科技有限公司</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link href="../js/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min93e3.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../js/plugins/layer/laydate/need/laydate.css" rel="stylesheet" />
+    <link href="../js/plugins/layer/laydate/skins/default/laydate.css" rel="stylesheet" />
+    <link href="../css/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerGrid.js"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerToolBar.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/Jquery/ligerUI/LV.js"></script>
+    <script src="../js/json2.js"></script>
+    <script src="../js/jquery/ligerUI/ligerui.all.js"></script>
+    <script src="../js/jquery/jquery.form.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/plugins/layer/laydate/laydate.js"></script>
+    <script src="../js/plugins/layer/layer.min.js"></script>
+   
+    <style>
+        .toolbar {
+            border-bottom: 2px solid #666;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            border-bottom: 1px solid #ccc;
+        }
+
+        .toolbar label {
+            display: inline-block;
+            height: 34px;
+            line-height: 34px;
+        }
+
+        table tbody tr:hover {
+            background: #ccc;
+        }
+
+        .table {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="toolbar">
+            <label style="float: left;">设备名称：</label>
+            <div style="float: left;margin:0 6px;width:200px;">
+                <select id="ddlSearch" class="form-control" style="width: 200px;"></select>
+            </div>
+            <label style="float: left;">开始时间：</label>
+            <div style="float: left;margin:0 6px;width:200px;">
+                <input id="btime" class="laydate-icon form-control layer-date" style="width: 200px;" placeholder="开始日期">
+            </div>
+            <label style="float: left;">截止时间：</label>
+            <div style="float: left;margin:0 6px;width:200px;">
+                <input id="etime" class="laydate-icon form-control layer-date" style="width: 200px;" placeholder="结束日期">
+            </div>
+            <button id="btnSearch" class="btn btn-success" onclick="f_search()"><i class="icon-magnifier"></i>搜索</button>
+
+        </div>
+        <script>
+            $(function () {
+
+                laydate({
+                    elem: "#btime",
+                    event: "focus"
+                });
+                laydate({
+                    elem: "#etime",
+                    event: "focus"
+                });
+            });
+        </script>
+        <div id="Grid"></div>
+
+    </div>
+    <script>
+        //绑定模板名称下拉框
+        $(function () {
+            $.ajax({
+                type: "POST",
+                url: "/api/Sys_User/AllUser",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlSearch").empty();
+                    var ddl = $("#ddlSearch");
+                    ddl.append("<option value='00'>选择全部</option>");
+                    var result = eval("(" + data + ")");
+                    $(result.Rows).each(function (key) {
+                        ddl.append('<option value="' + result.Rows[key].LogName + '">' + result.Rows[key].RealName + '</option>');
+                    });
+
+                },
+                error: function (data) {
+                    alert("下拉框绑定出错");
+                }
+            });
+        });
+
+
+    </script>
+
+</body>
+</html>
+<script type="text/javascript">
+    var grid = null;
+    var CustomersData = null;
+
+
+    $.ready(function () {
+
+        getData();
+    });
+
+    //获取数据绑定列表 
+    function getData() {
+        var id = $("#ddlSearch").val();
+        var btime = $("#btime").val();
+        var etime = $("#etime").val();
+        $.ajax({
+            type: "GET",
+            url: "/api/Log/GetUserLogByUserID?username=" + id + "&btime=" + btime + "&etime=" + etime,
+            dataType: "json",
+            success: function (result) {
+                CustomersData = eval("(" + result + ")");
+                f_gridbind();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    function f_gridbind() {
+        grid = $("#Grid").ligerGrid({
+            columns: [
+              
+                { display: '操作用户登录ID', name: 'Log_UserName', align: 'left', width: 150, },
+                 { display: '日志操作用户名', name: 'RealName', align: 'left', width: 150 },
+                { display: '操作描述', name: 'Log_Memo', minWidth: 200, },
+                { display: '操作内容', name: 'Log_Content', width: 300, align: 'left' },
+                { display: '操作时间', name: 'Log_AddTime', minWidth: 140 },               
+
+            ], pageSize: 20,
+            data: CustomersData,
+            width: '100%', height: '100%', rownumbers: true,
+
+        });
+
+
+        $("#pageloading").hide();
+    }
+
+    function f_search() {
+        getData();
+    }
+
+</script>

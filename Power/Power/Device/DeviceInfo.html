@@ -1,0 +1,190 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+
+
+    <link href="../css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="../css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../css/animate.min.css" rel="stylesheet">
+    <link href="../css/common.css" rel="stylesheet">
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="../js/plugins/layer/laydate/need/laydate.css">
+    <link type="text/css" rel="stylesheet" href="../js/plugins/layer/laydate/skins/default/laydate.css">
+    <script src="../js/jquery.min.js?v=2.1.4"></script>
+    <script src="../js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="../js/plugins/layer/layer.min.js"></script>
+    <script src="../js/plugins/iCheck/icheck.min.js"></script>
+    <script src="../js/plugins/layer/laydate/laydate.js"></script>
+
+    <script src="../js/common.js"></script>
+   
+</head>
+<body>
+    <form id="form1">
+        <div class="ibox-title">
+            <span style="font-size:20px;" class="badge badge-info"> 系统参数</span>
+            <label style="float:right;">模块：</label>
+            <div style="float: right; margin: 0 6px; width: 200px;">
+                <select id="ddlmodule" class="form-control" style="width: 200px;"></select>
+
+            </div>
+        </div>
+
+        <div class="ibox-content" style="vertical-align:top;">
+            <div class="form-group">
+                <table style="width:98%;">
+                    <tr>
+                        <td style="vertical-align:top;">
+                            <ul id="diul"  class="list-group"></ul>
+                        </td><td style="vertical-align:top;">
+    <ul id="aiul" class="list-group"></ul>
+</td>
+                        <td style="vertical-align:top;">
+                            <ul id="alarmul" class="list-group"></ul>
+                        </td>
+                        <td style="vertical-align:top;">
+                            <ul id="cvmul" class="list-group"></ul>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+        </form>
+</body>
+</html>
+<script>
+    var UID = getQueryStringByName("UID");
+    $(function () { 
+        ddlBind();
+    });
+    function ddlBind() {
+        $.ajax({
+            type: "POST",
+            url: "/api/Module/ModuleByDeviceId?deviceid=" + UID,
+            dataType: "json",
+            success: function (data) {
+                $("#ddlmodule").empty();
+                var ddl = $("#ddlmodule");
+                var result = eval("(" + data + ")");
+                $(result.Rows).each(function (key) {
+                    ddl.append('<option value="' + result.Rows[key].NO + '">' + result.Rows[key].ModuleName + '</option>');
+                });
+                loadData($("#ddlmodule").val());
+                ddl.bind("change", function () {
+                    loadData($("#ddlmodule").val());
+                });
+            },
+            error: function (data) {
+                swal("下拉框绑定出错！");
+            }
+        });
+    }
+
+ 
+   function loadData(moduleID) { 
+
+        $.ajax({
+            type: "GET",
+            url: "/api/SelectData/GetDeviceDataByModuleID?deviceId=" + UID + "&moduleID=" + moduleID,
+            dataType: "json",
+            success: function (data) {
+                var result = eval("(" + data + ")");
+                var rtai = $("#aiul");
+                var rtdi = $("#diul");
+                var rtalarm = $("#alarmul");
+                var rtcvm = $("#cvmul");
+                rtai.html(""); rtalarm.html("");
+                rtdi.html(""); rtcvm.html("");
+                $(result.Rows).each(function (key) {
+                  
+                    if (result.Rows[key].parametertypeid == "1") {
+                        var val = result.Rows[key].RTVal;
+                        if (result.Rows[key].LowVal != '-' && result.Rows[key].HighVal != '-') {
+                           
+                            if (result.Rows[key].LowVal < val && result.Rows[key].HighVal > val) {
+                                rtai.append('<li style="width:260px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-info">' + val + '</span></li>');
+                            }
+                            else {
+                                
+                                rtai.append('<li style="width:260px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-danger">' + val + '</span></li>');
+                            }
+                        }
+                        else {
+                            rtai.append('<li style="width:260px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-info">' + val + '</span></li>');
+                        }
+                    }
+                    if (result.Rows[key].parametertypeid == "2") {
+                        var dval = "";
+                        if (result.Rows[key].datastartbit == 1) {
+                            if (result.Rows[key].RTVal == 0) {
+                                dval = "待机";
+                               // $("#devrunImg").attr('src', "../images/氢能路线1-有市电时.jpg");
+                            }
+                            else if (result.Rows[key].RTVal == 1) {
+                                dval = "启动";
+                                //$("#devrunImg").attr('src', "../images/氢能路线2-停电时.jpg");
+                            }
+                            else if (result.Rows[key].RTVal == 2) {
+                                dval = "运行";
+                               // $("#devrunImg").attr('src', "../images/氢能路线3-无市电时.jpg");
+                            }
+                            else if (result.Rows[key].RTVal == 3) {
+                                dval = "停机";
+                               // $("#devrunImg").attr('src', "../images/氢能路线0-.jpg");
+                            }
+                        }
+                        else {
+                            if (result.Rows[key].RTVal == 0) {
+                                dval = "关闭";
+                            }
+                            else {
+                                dval = "开启";
+                            }
+                        }
+                        rtdi.append('<li style="width:260px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-info">' + dval + '</span></li>');
+                    }
+                    if (result.Rows[key].parametertypeid == "4") {
+                        var dval = "";
+                        if (result.Rows[key].RTVal == 0) {
+                            dval = "正常";
+                            rtalarm.append('<li style="width:220px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-info">' + dval + '</span></li>');
+                        }
+                        else {
+                            dval = "报警";
+                            rtalarm.append('<li style="width:220px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-danger">' + dval + '</span></li>');
+                        }
+
+                    } if (result.Rows[key].parametertypeid == "5") {
+                        var val = result.Rows[key].RTVal;
+                        if (result.Rows[key].LowVal != '-' && result.Rows[key].HighVal != '-') {
+                           
+                            if (result.Rows[key].LowVal < val && result.Rows[key].HighVal > val) {
+                                rtcvm.append('<li style="width:220px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-info">' + val + '</span></li>');
+                            }
+                            else {
+
+                                rtcvm.append('<li style="width:220px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-danger">' + val + '</span></li>');
+                            }
+                        }
+                        else {
+                            rtcvm.append('<li style="width:220px;" class="list-group-item ">' + result.Rows[key].parametername + '<span class="badge badge-info">' + val + '</span></li>');
+                        }
+                    }
+                });
+
+
+
+            },
+            error: function (error) {
+
+            }
+        });
+
+    }
+
+    
+</script>

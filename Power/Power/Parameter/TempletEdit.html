@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link href="../js/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min93e3.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerGrid.js"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerToolBar.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/Jquery/ligerUI/LV.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/plugins/sweetalert/sweetalert.min.js"></script>
+    <link href="../js/Jquery/Validation-Engine-master/css/template.css" rel="stylesheet" />
+    <link href="../js/Jquery/Validation-Engine-master/css/validationEngine.jquery.css" rel="stylesheet" />
+    <script src="../js/Jquery/Validation-Engine-master/js/jquery.validationEngine.js"></script>
+    <script src="../js/Jquery/Validation-Engine-master/js/languages/jquery.validationEngine-zh_CN.js"></script>
+   
+</head>
+<body>
+    <div>
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>设备型号</h5>
+                </div>
+                <div class="ibox-content">
+                    <form id="myform" class="form-horizontal" role="form">
+                      
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">型号名称：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="typename" placeholder="型号名称" class=" validate[required] form-control">
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">型号说明：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="memo" placeholder="备注" class="form-control">
+
+                            </div>
+                        </div>
+
+
+                        <!--<div class="hr-line-dashed"></div>-->
+                        <div class="form-group">
+                            <button id="btnSave" onclick="Save()" type="submit" class="btn btn-primary col-sm-offset-4">&nbsp;&nbsp;保存&nbsp;&nbsp;</button>
+                            <button id="btnCancel" onclick="Empty()" class="btn btn-danger col-sm-offset-1">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    var UID = getQueryStringByName("Uid");
+    var getData = null;
+    var userinfo;
+
+    $(function () {
+        jQuery("#myform").validationEngine();
+        if (UID != "") {
+            $.ajax({
+                type: "GET",
+                url: "/api/Templet/GetTempletByUID?Uid=" + UID,
+                dataType: "json",
+                success: function (result) {
+                    getData = eval("(" + result + ")");
+                    BindVal(getData);
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+        else {
+            Empty();
+        }
+
+    });
+
+    function UserInfo() {
+        $.ajax({
+            type: "GET",
+            url: "/api/Sys_User/GetLoginInfo",
+            dataType: "json",
+            success: function (result) {
+                if (result != "") {
+                    userinfo = eval("(" + result + ")");
+
+                }
+                else {
+                    location.href = "../login.html";
+                }
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+    //绑定修改数据
+    function BindVal(getData) {
+        $("#typename").attr("value", getData.templetname);
+
+        $("#memo").val(getData.memo);
+
+    }
+    //清空
+    function Empty() {
+        $("#typename").attr("value", "");
+        $("#memo").val("");
+        UID = "";
+    }
+
+    //保存数据
+    function Save() {
+        if (!jQuery('#myform').validationEngine('validate')) {
+            // swal('提示', '验证不通过！', 'success');
+            return;
+        }
+            $.ajax({
+                type: "POST",
+                url: "/api/Templet/SaveTemplet?Uid=" + UID + "&Templetname=" + $("#typename").val() + "&Memo=" + $("#memo").val(),
+                dataType: "json",
+                success: function (result) {
+                    var val = result;
+                    if (val != "Error") {
+                        swal("提示", "编辑成功!", "success");
+                        if (UID != "") {
+                            parent.getData();
+                            UID = "";
+                        }
+                    }
+
+                },
+                error: function () {
+                    parent.getData();
+                }
+            });
+       
+    }
+</script>

@@ -1,0 +1,369 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="../js/Jquery/Validation-Engine-master/css/template.css" rel="stylesheet" />
+    <link href="../js/Jquery/Validation-Engine-master/css/validationEngine.jquery.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link href="../js/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css" />
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min93e3.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerGrid.js"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerToolBar.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/Jquery/ligerUI/LV.js"></script>
+    <script src="../js/common.js"></script>
+    <link href="../js/ztree/css/demo.css" rel="stylesheet" />
+    <link href="../js/ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="../js/ztree/js/jquery.ztree.core.js"></script>
+    <script src="../js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="../js/Jquery/Validation-Engine-master/js/jquery.validationEngine.js"></script>
+    <script src="../js/Jquery/Validation-Engine-master/js/languages/jquery.validationEngine-zh_CN.js"></script>
+    <script src="../js/plugins/ajaxfileupload_JS_File/AjaxUpload.js"></script>
+    <script type="text/javascript">
+        var setting = {
+            view: {
+                dblClickExpand: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: onClick
+            }
+        };
+
+
+        function onClick(e, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+			nodes = zTree.getSelectedNodes(),
+			v = "";
+            nodes.sort(function compare(a, b) { return a.id - b.id; });
+            for (var i = 0, l = nodes.length; i < l; i++) {
+                v = nodes[i].name;
+                $("#department").val(nodes[i].id);
+            }
+            //if (v.length > 0 ) v = v.substring(0, v.length-1);
+            var cityObj = $("#citySel");
+            cityObj.attr("value", v);
+            hideMenu();
+            BindDevice($("#department").val());
+        }
+
+        function showMenu() {
+            var cityObj = $("#citySel");
+            var cityOffset = $("#citySel").offset();
+            $("#menuContent").css({ left: cityOffset.left + "px", top: cityOffset.top + cityObj.outerHeight() + "px" }).slideDown("fast");
+
+            $("body").bind("mousedown", onBodyDown);
+        }
+        function hideMenu() {
+            $("#menuContent").fadeOut("fast");
+            $("body").unbind("mousedown", onBodyDown);
+        }
+        function onBodyDown(event) {
+            if (!(event.target.id == "citySel" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length > 0)) {
+                hideMenu();
+            }
+        }
+
+        $(document).ready(function () {
+            UserInfo();
+          
+            jQuery("#signupForm").validationEngine();
+            bindTree();
+            binduser();
+            init();
+        });
+
+        //绑定机构treeview
+        function bindTree() {
+            $.ajax({
+                type: "POST",
+                url: "/api/Department/DepartmentByUser",
+                dataType: "json",
+                success: function (data) {
+                    var jsonstr = "[]";
+                    var jsonarray = eval('(' + jsonstr + ')');
+                    var zNodes;
+                    var result = eval("(" + data + ")");
+                    $(result.Rows).each(function (key) {
+
+                        var node = { "id": "" + result.Rows[key].Dep_ID + "", "pId": "" + result.Rows[key].Dep_Parent + "", "name": "" + result.Rows[key].Dep_Name + "", "open": "true" };
+                        jsonarray.push(node);
+                    });
+
+                    $.fn.zTree.init($("#treeDemo"), setting, jsonarray);
+                },
+                error: function (data) {
+                    swal('提示', 'TREE绑定出错！', 'error');
+                }
+            });
+
+        }
+
+        //初始化 
+        function init() {
+
+
+            //初始化图片上传 
+            var btnImg = document.getElementById("btnUploadImg");
+            var img = document.getElementById("imgShow");
+            var hidImgName = document.getElementById("hidImgName");
+            g_AjxUploadImg(btnImg, img, hidImgName);
+        }
+
+
+        var g_AjxTempDir = "../images/weihu/";
+
+        //图片上传 
+        function g_AjxUploadImg(btn, img, hidPut) {
+            var button = btn, interval;
+            new AjaxUpload(button, {
+                action: '/Device/uploadImg.ashx?fileType=img',
+                data: {},
+                name: 'myfile',
+                onSubmit: function (file, ext) {
+                    if (!(ext && /^(jpg|JPG|png|PNG|gif|GIF)$/.test(ext))) {
+                        alert("您上传的图片格式不对，请重新选择！");
+                        return false;
+                    }
+                },
+                onComplete: function (file, response) {
+                    flagValue = response;
+                    if (flagValue == "1") {
+                        alert("您上传的图片格式不对，请重新选择！");
+                    }
+                    else if (flagValue == "2") {
+                        alert("您上传的图片大于200K，请重新选择！");
+                    }
+                    else if (flagValue == "3") {
+                        alert("图片上传失败！");
+                    }
+                    else {
+                        hidPut.value = response;
+                        img.src = g_AjxTempDir + response;
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+    <div>
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>添加维护信息</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" id="signupForm" role="form">
+                        <table style="width: 100%; margin: 10px auto; vertical-align:top;" class="tableForm">
+                            <tr>
+                                <td>
+                                    
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">上传照片：</label>
+                                        <div class="col-sm-3">
+                                            <input type="hidden" id="hidImgName" />
+
+                                            <button id="btnUploadImg" class="btn btn-success " type="button">
+                                                <i class="fa fa-upload"></i>&nbsp;<span class="bold">上传</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputfile" class="col-sm-3 control-label">用户机构：</label>
+
+                                        <div class="col-sm-3">
+                                            <input id="citySel" type="text" name="citySel" onclick="showMenu(); return false;" class="validate[required] form-control" readonly value="" style="width:200px;" />
+
+                                        </div>
+                                        <div id="menuContent" class="menuContent" style="display:none; position: absolute; z-index:100">
+                                            <ul id="treeDemo" class="ztree" style="margin-top:0; width:200px;"></ul>
+                                        </div>
+                                        <input id="department" type="hidden" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">基站名称：</label>
+                                        <div class="col-sm-3">
+                                            <select id="ddlname" class="form-control" style="width: 200px;"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">维护内容：</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" id="content" name="content" placeholder="内容" class="validate[required] form-control" style="width: 300px; height:100px;" />
+
+                                        </div>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">照片：</label>
+                                        <div class="col-sm-3">
+                                            <img id="imgShow" style="border: 1px solid black; width :400px;height:320px;text-align:center ;vertical-align :middle" src="../images/weihu/kb.jpg" />
+
+                                        </div>
+
+                                    </div></td>
+                            </tr>
+                        </table>
+                        <!--<div class="hr-line-dashed"></div>-->
+                        <div class="form-group">
+                            <input id="btnSave" type="submit" onclick="Save()" class="btn btn-primary col-sm-offset-4" value=" 保存 " />
+                            <input id="btnCancel" type="button" onclick="Empty()" class="btn btn-danger col-sm-offset-1" value=" 取消 " />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>  
+</body>
+</html>
+<script>
+    //绑定模板名称下拉框
+    function BindDevice(depid) {
+
+        $.ajax({
+            type: "POST",
+            url: "/api/Device/DeviceByDepID?depID=" + depid,
+            dataType: "json",
+            success: function (data) {
+                $("#ddlname").empty();
+                var ddl = $("#ddlname");
+                //ddl.append("<option value=''>请选择...</option>");
+                var result = eval("(" + data + ")");
+                $(result.Rows).each(function (key) {
+                    ddl.append('<option value="' + result.Rows[key].ID + '">' + result.Rows[key].stationname + '</option>');
+                });
+               
+            },
+            error: function (data) {
+                swal("下拉框绑定出错");
+            }
+        });
+    }
+
+    var UID = getQueryStringByName("Uid");
+    var getData = null;
+    var userinfo;
+
+    function binduser() {        
+        if (UID != "") {
+            $.ajax({
+                type: "GET",
+                url: "/api/Maintenance/GetModelByUID?Uid=" + UID,
+                dataType: "json",
+                success: function (result) {
+                    getData = eval("(" + result + ")");
+                    BindDevice(getData.Rows[0].Dep_ID);
+                    setTimeout("BindVal()",1000);                   
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+        else {
+            Empty();
+        }
+
+    };
+
+    function UserInfo() {
+        $.ajax({
+            type: "GET",
+            url: "/api/Sys_User/GetLoginInfo",
+            dataType: "json",
+            success: function (result) {
+                if (result != "") {
+                    userinfo = eval("(" + result + ")");
+
+                }
+                else {
+                    location.href = "../login.html";
+                }
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    //绑定修改数据
+    function BindVal() {
+       
+        $("#department").val(getData.Rows[0].Dep_ID);       
+        $("#content").val(getData.Rows[0].Memo);
+        $("#citySel").val(getData.Rows[0].Dep_Name);
+       
+        if (getData.Rows[0].ImgName.length > 1) {
+            $("#imgShow").attr("src", "../images/weihu/" + getData.Rows[0].ImgName);
+
+        }
+        $("#hidImgName").val(getData.Rows[0].ImgName);
+        $("#ddlname").val(getData.Rows[0].DeviceID);
+    }
+    //清空
+    function Empty() {
+        $("#department").val("");
+        $("#content").val("");
+        $("#imgpath").val();
+    }
+
+    //保存数据
+    function Save() {
+
+        if (!jQuery('#signupForm').validationEngine('validate')) {
+            // swal('提示', '验证不通过！', 'success');
+            return;
+        }
+        var data = "&depID=" + $("#department").val() + "&content=" + $("#content").val() + "&DevID=" + $("#ddlname").val() + "&imgpath=" + $("#hidImgName").val()
+        $.ajax({
+            type: "POST",
+            url: "/api/Maintenance/AddMaintenance?Uid=" + UID + data,
+            dataType: "json",
+            success: function (result) {
+                var val = result;
+                if (val == "OK") {
+
+                    if (UID != "") {
+                        parent.getData();
+                        UID = "";
+                    }
+                    swal('提示', '编辑用户信息成功！', 'success');
+                } else if (val == "Error") {
+                    swal('提示', '编辑用户信息错误！', 'error');
+                }
+                else {
+                    swal('提示', '登录名已存在！', 'error');
+                }
+            },
+            error: function (error) {
+                if (UID != "") {
+                    parent.getData();
+                }
+            }
+        });
+
+
+    }
+
+ 
+
+  
+</script>

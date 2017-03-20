@@ -1,0 +1,326 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>上海恒劲动力科技有限公司</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link href="../js/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min93e3.css" rel="stylesheet" />
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/json2.js"></script>
+    <script src="../js/jquery/ligerUI/ligerui.all.js"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDrag.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerResizable.js" type="text/javascript"></script>
+    <script src="../js/common.js"></script>
+    <link href="../js/ztree/css/demo.css" rel="stylesheet" />
+    <link href="../js/ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="../js/ztree/js/jquery.ztree.core.js"></script>
+    <script src="../js/plugins/sweetalert/sweetalert.min.js"></script>
+
+    <style type="text/css">
+        .div1 {
+            border: 1px solid #9bdf70;           
+             position: absolute;
+            background: #F0F0F0; /* #4D4948; */
+            width: 600px;
+            height: 300px;
+            overflow: auto;
+        }
+        .sendtop {
+            position: relative;
+            width: 150px;
+            height: auto;
+            margin: 20px 390px 0;
+            word-wrap: break-word;
+            font-size: 12px;
+        }
+        .send {
+            position: relative;
+            width: 330px;
+            height: auto;
+            border: 3px solid #A6FFFF;
+            background: White;
+            border-radius: 5px; /* 圆角 */
+            margin: 0 190px 0;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+
+            .send .arrow {
+                position: absolute;
+                top: 5px;
+                right: -16px; /* 圆角的位置需要细心调试哦 */
+                width: 0;
+                height: 0;
+                font-size: 0;
+                border: solid 8px;
+                border-color: #F0F0F0 #F0F0F0 #F0F0F0 #A6FFFF;
+            }
+        .receivetop {
+            position: relative;
+            width: 150px;
+            height: auto;
+            margin: 20px 0 0 30px;
+            word-wrap: break-word;
+        }
+        .receive {
+            position: relative;
+            width: 330px;
+            height: auto;
+            border: 3px solid #A6FFFF;
+            background: White;
+            border-radius: 5px; /* 圆角 */
+            margin: 0 0 0 30px;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+            .receive .arrowleft {
+                position: absolute;
+                top: 5px;
+                left: -16px; /* 圆角的位置需要细心调试哦 #CCCCFF;*/
+                width: 0;
+                height: 0;
+                font-size: 0;
+                border: solid 8px;
+                border-color: #F0F0F0 #A6FFFF #F0F0F0 #F0F0F0;
+            }
+    </style>
+
+</head>
+
+<body class="gray-bg" >
+    <div class="wrapper wrapper-content">
+        <div class="toolbar">
+        </div>
+        <table >
+            <tr>
+                <td style="width: 300px; vertical-align:top;">
+                    <div>
+                        <ul id="treeDemo" style="width: 280px; height: 380px;" class="ztree"></ul>
+                    </div>
+                </td>
+                <td style="width: 600px; vertical-align: top;">
+                    <form class="form-horizontal" id="signupForm" role="form">
+                        <div id="divcontent" class="div1">
+
+                        </div>
+                        <div style=" position: absolute; top:320px; text-align:right;">
+                            <input id="btnSave" onclick="Save()" class="btn btn-primary" type="button" value=" 发送 " />
+                            &nbsp;&nbsp;<input id="btnSave" onclick="getRecord('','history')" class="btn btn-primary" type="button" value=" 消息记录 " />
+                            <div class="form-group" style="border: 1px solid #9bdf70;">
+                                <div class="col-sm-8">
+                                    <textarea id="tacontent" style="width: 600px; height:100px;" rows="2" cols="20" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <input id="hiddepID" type="hidden" />
+                            <!--<div class="hr-line-dashed"></div>-->
+
+                        </div>
+                    </form>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+</body>
+</html>
+<script>
+    var User_ID = "";
+    $(function () {
+        $.ajax({
+            type: "GET",
+            url: "/api/Sys_User/GetLoginInfo",
+            dataType: "json",
+            success: function (result) {
+                if (result != "") {
+                    userinfo = eval("(" + result + ")");
+                    User_ID = userinfo.UserId;
+                    bindTree();
+                    time();
+                }
+                else {
+                    location.href = "../login.html";
+                }
+            },
+            error: function (error) {
+
+            }
+        });
+    });
+    //tree 参数
+    var setting = {
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        callback: {
+            onClick: onClick
+        }
+    };
+  
+
+    //绑定机构treeview
+    function bindTree() {
+        $.ajax({
+            type: "GET",
+            url: "/api/Communication/GetDepartmentUser",
+            dataType: "json",
+            success: function (data) {
+                var jsonstr = "[]";
+                var jsonarray = eval('(' + jsonstr + ')');
+                var zNodes;
+                var result = eval("(" + data + ")");
+                $(result.Rows).each(function (key) {
+                    if (result.Rows[key].Count == 1) {
+                        var node = { "id": "" + result.Rows[key].ID + "", "pId": "" + result.Rows[key].ParentID + "", "name": "" + result.Rows[key].Name + "", "open": "true", icon: "../js/ztree/css/zTreeStyle/img/diy/user.png" };
+                    }
+                    else {
+                        var node = { "id": "" + result.Rows[key].ID + "", "pId": "" + result.Rows[key].ParentID + "", "name": "" + result.Rows[key].Name + "", "open": "true" };
+
+                    }
+                    jsonarray.push(node);
+                });
+
+
+                $.fn.zTree.init($("#treeDemo"), setting, jsonarray);
+            },
+            error: function (data) {
+                alert("TREE绑定出错");
+            }
+        });
+
+    }
+    
+    //机构树点击事件
+    function onClick(event, treeId, treeNode, clickFlag) {                 
+        $("#hiddepID").val(treeNode.id);
+        getRecord(treeNode.id, "new");
+    }
+    //获取消息记录
+    function getRecord(userid, flag) {
+        if (userid == "") {
+             userid = $("#hiddepID").val();
+        }
+        if (userid != "") {
+            $.ajax({
+                type: "GET",
+                url: "/api/Communication/GetCommunication?UserID=" + userid + "&Flag=" + flag,
+                dataType: "json",
+                success: function (data) {
+                    var result = eval("(" + data + ")");
+                    var strhtml = "";
+                    $(result.Rows).each(function (key) {
+                        if (result.Rows[key].ReceiveID == User_ID)
+                        { strhtml += receive(result.Rows[key].Content, result.Rows[key].TM); }
+                        if (result.Rows[key].SenderID == User_ID)
+                        { strhtml += send(result.Rows[key].Content, result.Rows[key].TM); }
+                    });
+                    $("#divcontent").html(strhtml);
+                    var div = document.getElementById('divcontent');
+                    //swal(div.scrollHeight);
+                    div.scrollTop = div.scrollHeight;
+                },
+                error: function (error) {
+                    swal("加载数据出错！");
+                }
+            });
+        }
+       
+    }
+   
+    
+
+    //保存数据
+    function Save() {
+        $.ajax({
+            type: "POST",
+            url: "/api/Communication/SendCommunication?ReceiveID=" + $("#hiddepID").val() + "&Content=" + encodeURI($("#tacontent").val()),
+            dataType: "json",
+            success: function (result) {
+                var val = result;
+                if (val != "Error") {
+                    getRecord("","new");
+                    $("#tacontent").val("")
+                }
+            },
+            error: function (error) {
+                alert('发送失败!');
+            }
+        });
+    }
+
+    //发送
+    function send(content,tm)
+    {
+        var str="<div class=\"sendtop\">"+tm+"</div><div class=\"send\">"+content+"<div class=\"arrow\"></div></div>";
+        return str;
+    }
+
+    //接收
+    function receive(content,tm)
+    {
+        var str = "<div class=\"receivetop\">" + tm + "</div><div class=\"receive\">" + content + "<div class=\"arrowleft\"></div></div>";
+        return str;
+    }
+
+    //未读消息弹窗
+    var tip;
+    function f_tip(contentstr) {
+        if (contentstr != "") {
+
+            if (!tip) {
+                tip = $.ligerDialog.tip({ title: '未读消息', content: contentstr });
+            }
+            else {
+                var visabled = tip.get('visible');
+                if (!visabled) tip.show();
+                tip.set('content', contentstr);
+            }
+
+        }
+        
+    }
+
+    var timeout = false; //启动及关闭按钮  
+    function time() {
+        if (timeout) return;
+        unread();
+        setTimeout(time, 2000); //time是指本身,延时递归调用自己,100为间隔调用时间,单位毫秒  
+    }
+    function unread()
+    {
+        $.ajax({
+            type: "GET",
+            url: "/api/Communication/GetCommunicationByUserID?rid=1",
+            dataType: "json",
+            success: function (data) {
+                var result = eval("(" + data + ")");
+                var strhtml = "";
+                $(result.Rows).each(function (key) {
+
+                    strhtml += "<a  href=\"javascript:getRecord('" + result.Rows[key].SenderID + "','new');\">" + result.Rows[key].RealName + "</a>"
+                  
+                });
+                f_tip(strhtml);
+            },
+            error: function (error) {
+                swal("加载数据出错！");
+            }
+        });
+
+    }
+</script>
+

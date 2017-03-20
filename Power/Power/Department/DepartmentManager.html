@@ -1,0 +1,301 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>上海恒劲动力科技有限公司</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link href="../js/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min93e3.css" rel="stylesheet" />
+    <link href="../css/plugins/iCheck/custom.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerGrid.js"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerToolBar.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/json2.js"></script>
+    <script src="../js/jquery/ligerUI/ligerui.all.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/plugins/iCheck/icheck.min.js"></script>
+    <link href="../js/ztree/css/demo.css" rel="stylesheet" />
+    <link href="../js/ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" />
+    <script src="../js/ztree/js/jquery.ztree.core.js"></script>
+    <script src="../js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="../js/Jquery/jquery-validation/jquery.validate.min.js"></script>
+    <script src="../js/Jquery/jquery-validation/messages_cn.js"></script>
+    <script src="../js/Jquery/jquery-validation/jquery.validate.additional.js"></script>
+    <script src="../js/Jquery/jquery-validation/jquery.metadata.js"></script>
+    
+    <style>
+        .toolbar {
+            border-bottom: 2px solid #666;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+              
+    </style>
+  
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="toolbar">           
+
+        </div>
+        <table>
+            <tr>
+                <td style="width: 300px; vertical-align:top;">
+                    <div>
+                        <ul id="treeDemo" style="width: 280px; height: 380px;" class="ztree"></ul>
+                    </div>
+                </td>
+                <td style="width: 600px; vertical-align :top;">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>用户类型</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal" id="signupForm" role="form">
+                                <div class="form-group">
+                                    <h4><label class="col-sm-3 control-label">编辑类型：</label></h4>
+                                    <div class="col-sm-8">
+                                        <div style="float: left;" class="radio i-checks">
+                                            <label> <input type="radio" value="add" name="rddep"> <i></i> 新增子机构</label>
+                                        </div>
+                                        <div style="float: left;" class="radio i-checks">
+                                            <label><input type="radio" checked="" value="edit" name="rddep"> <i></i> 编辑机构信息</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputfile" class="col-sm-3 control-label">机构类型：</label>
+                                    <div class="col-sm-3">
+                                        <select id="deptypeid" class="form-control" style="width: 300px;">
+                                            <option value="1">管理机构</option>
+                                            <option value="2">基站</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">机构名称：</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="depname" name="depname" placeholder="机构名称" style="width: 300px;" data-rule-required="true" class="form-control">
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">机构联系人：</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="contact" placeholder="机构联系人" style="width: 300px;" class="form-control">
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">联系电话：</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="phone" placeholder="联系电话" style="width: 300px;" class="form-control">
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">联系地址：</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" id="address" placeholder="联系地址" style="width: 300px;" class="form-control">
+
+                                    </div>
+                                </div>
+                                <input id="hiddepID" type="hidden" />
+                                <!--<div class="hr-line-dashed"></div>-->
+                                <div class="form-group">
+                                    <input id="btnSave" onclick="Save()" class="btn btn-primary col-sm-offset-3" type="button" value="保存" />
+                                    <input id="btnCancel" onclick="Empty()" class="btn btn-warning col-sm-offset-1" type="button" value="取消" />
+                                    <input id="btnDel" type="button" class="btn btn-danger col-sm-offset-1" onclick="Del()" value="删除" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+</body>
+</html>
+<script>
+
+    //tree 参数
+    var setting = {
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        callback: {
+            onClick: onClick
+        }
+    };
+    //页面加载完成执行
+    $(document).ready(function () {
+        $(".i-checks").iCheck({ checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green", });
+        bindTree();
+        $("#signupForm").validate({
+            debug: true
+        });
+    });
+
+    //绑定机构treeview
+    function bindTree()
+    {
+        $.ajax({
+            type: "POST",
+            url: "/api/Department/DepartmentByUser",
+            dataType: "json",
+            success: function (data) {
+                var jsonstr = "[]";
+                var jsonarray = eval('(' + jsonstr + ')');
+                var zNodes;
+                var result = eval("(" + data + ")");
+                $(result.Rows).each(function (key) {
+
+                    var node = { "id": "" + result.Rows[key].Dep_ID + "", "pId": "" + result.Rows[key].Dep_Parent + "", "name": "" + result.Rows[key].Dep_Name + "", "open": "true" };
+                    jsonarray.push(node);
+                });
+
+
+                $.fn.zTree.init($("#treeDemo"), setting, jsonarray);
+            },
+            error: function (data) {
+                alert("TREE绑定出错");
+            }
+        });
+
+    }
+    var rdval = "";
+    var getData = null;
+    //机构树点击事件
+    function onClick(event, treeId, treeNode, clickFlag) {
+        //alert(treeNode.id);
+        rdval = $("input[name='rddep']:checked").val();
+        //alert(rdval);
+        if (rdval == "edit") {
+            getDepartment(treeNode.id);
+        }
+        else {
+            Empty();
+        }
+        $("#hiddepID").val(treeNode.id);
+    }
+
+    function getDepartment(depid) {
+        if (depid != "") {
+            $.ajax({
+                type: "GET",
+                url: "/api/Department/GetDepartmentByUID?depid=" + depid,
+                dataType: "json",
+                success: function (result) {
+                    getData = eval("(" + result + ")");
+                    BindVal(getData);
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+        else {
+            Empty();
+        }
+    }
+    //绑定修改数据
+    function BindVal(getData) {
+        $("#deptypeid").val(getData.Dep_Type);
+        $("#depname").val(getData.Dep_Name);
+        $("#contact").val(getData.Dep_Contact);
+        $("#phone").val(getData.Dep_Phone);
+        $("#address").val(getData.Dep_address);
+       
+
+    }
+    //清空
+    function Empty() {
+        $("#depname").val("");
+        $("#contact").val("");
+        $("#phone").val("");
+        $("#address").val("");
+       
+    }
+
+    //保存数据
+    function Save() {
+
+        if (!$("#signupForm").valid()) {
+            // swal('提示', '验证不通过！', 'success');
+            return;
+        }
+        var data = "&Dep_Name=" + $("#depname").val() + "&Dep_Contact=" + $("#contact").val() + "&Dep_Phone=" + $("#phone").val() + "&Dep_address="
+           + $("#address").val() + "&Dep_Type=" + $("#deptypeid").val() + "&ParentID=" + $("#hiddepID").val() ;
+
+        $.ajax({
+            type: "POST",
+            url: "/api/Department/SaveDepartment?Mark=" + $("input[name='rddep']:checked").val() + data,
+            dataType: "json",
+            success: function (result) {
+                var val = result;
+                if (val != "Error") {
+                    alert('编辑成功!');
+                    $("#hiddepID").val("")
+                    bindTree();
+                }
+            },
+            error: function (error) {
+               
+            }
+        });
+
+
+    }
+    
+    ///删除机构
+    function Del() {
+        if ($("#hiddepID").val() != "") {
+            swal({
+                title: "您确定要删除这条信息吗",
+                text: "删除后将无法恢复，请谨慎操作！",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "不删除",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "删除",
+                closeOnConfirm: false
+            }, function () {
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/Department/DelDepartment?Uid=" + $("#hiddepID").val(),
+                    dataType: "json",
+                    success: function (result) {
+                        if (result != "" && result == "OK") {
+                            swal("删除成功！", "您已经永久删除了这条信息。", "success");
+                            bindTree();
+                        }
+                    },
+                    error: function (error) {
+                        $.ligerDialog.alert('删除异常!');
+                    }
+                });
+
+            });
+        }
+    }
+
+  
+
+</script>
+

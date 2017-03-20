@@ -1,0 +1,25 @@
+﻿create function GetDistinct(@str varchar(1000))  
+returns varchar(1000)  
+as  
+begin  
+    declare @temp varchar(1000)  
+    while(len(@str)>0)  
+    begin  
+    if(charindex(',',@str)=0)
+    set @str=@str+','
+    if charindex(','+substring(@str,1,charindex(',',@str)-1)+',',','+isnull(@temp,'')+',')=0
+       begin
+          set @temp=isnull(@temp+',','')+substring(@str,1,charindex(',',@str)-1)  
+          set @str=substring(@str,charindex(',',@str)+1,len(@str)) 
+        end
+        else
+           begin 
+            if charindex(',',@str)=len(@str)
+            set @str=''
+            else
+             set @str=substring(@str,charindex(',',@str)+1,len(@str)) 
+            end    
+       end 
+    return @temp  
+end  
+go 

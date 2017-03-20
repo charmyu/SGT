@@ -1,0 +1,313 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="" content="width=device-width, initial-scale=1.0" />
+    <title>上海恒劲动力科技有限公司</title>
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <link href="../js/lib/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min93e3.css" rel="stylesheet" />
+    <link href="../css/common.css" rel="stylesheet" />
+    <link href="../css/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+    <link href="../css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="../js/lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
+    <link href="../js/lib/ligerUI/skins/Gray/css/all.css" rel="stylesheet" type="text/css" />
+    <script src="../js/lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/core/base.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerGrid.js"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerToolBar.js" type="text/javascript"></script>
+    <script src="../js/lib/ligerUI/js/plugins/ligerDialog.js" type="text/javascript"></script>
+    <script src="../js/Jquery/ligerUI/LV.js"></script>
+    <script src="../../js/json2.js"></script>
+    <script src="../../js/jquery/ligerUI/ligerui.all.js"></script>
+    <script src="../../js/jquery/jquery.form.js"></script>
+    <script src="../../js/common.js"></script>
+    <script src="../js/plugins/sweetalert/sweetalert.min.js"></script>
+   
+    <style>
+        .toolbar {
+            border-bottom: 2px solid #666;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            border-bottom: 1px solid #ccc;
+        }
+
+        .toolbar label {
+            display: inline-block;
+            height: 34px;
+            line-height: 34px;
+        }
+
+        table tbody tr:hover {
+            background: #ccc;
+        }
+
+        .table {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="toolbar">
+
+            <label style="float: left;">型号名称：</label>
+            <div style="float: left;margin:0 6px;width:200px;">
+                <select id="ddlSearch" class="form-control" style="width: 200px;"></select>
+            </div>
+            <label style="float: left;">模块名称：</label>
+            <div style="float: left;margin:0 6px;width:200px;">
+                <select id="ddlmodule" class="form-control" style="width: 200px;"></select>
+            </div> 
+
+            <label style="float: left;">参数名称：</label>
+            <div style="float: left;margin:0 6px;width:200px;">
+                <input id="txtSearch" class="form-control" placeholder="请输入内容进行搜索" />
+            </div>
+            <button id="btnSearch" class="btn btn-success" onclick="f_search()"><i class="icon-magnifier"></i>搜索</button>
+
+        </div>
+        <div id="Grid"></div>
+
+    </div>
+
+    <script>
+        //绑定模板名称下拉框
+        $(function () {         
+
+                $.ajax({
+                    type: "GET",
+                    url: "/api/Templet/GetAllTemplet",
+                    dataType: "json",
+                    success: function (data) {
+                        $("#ddlSearch").empty();
+                        var ddl = $("#ddlSearch");
+                        //ddl.append("<option value=''>请选择...</option>");
+                        var result = eval("(" + data + ")");
+                        $(result.Rows).each(function (key) {
+                            ddl.append('<option value="' + result.Rows[key].ID + '">' + result.Rows[key].templetname + '</option>');
+                        });               
+                    ddlBind($("#ddlSearch").val());
+                    ddl.bind("change", function () {
+                        ddlBind($("#ddlSearch").val());
+                    });
+                },
+                error: function (data) {
+                    swal("下拉框绑定出错");
+                }
+            });
+        });
+
+        function ddlBind(templetID)
+        {
+            $.ajax({
+                type: "GET",
+                url: "/api/Module/GetModuleByDeviceId?templetID=" + templetID + "&id=1",
+                dataType: "json",
+                success: function (data) {
+                    $("#ddlmodule").empty();
+                    var ddl = $("#ddlmodule");
+                    var result = eval("(" + data + ")");
+                    $(result.Rows).each(function (key) {
+                        ddl.append('<option value="' + result.Rows[key].ID + '">' + result.Rows[key].ModuleName + '</option>');
+                    });
+
+                },
+                error: function (data) {
+                    swal("下拉框绑定出错！");
+                }
+            });
+        }
+
+
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+    var grid = null;
+    var CustomersData = null;
+
+
+    $(function () {
+        getData();
+    });
+
+    //获取数据绑定列表
+    function getData() {
+        $.ajax({
+            type: "GET",
+            url: "/api/Parameter/GetAllParameter",
+            dataType: "json",
+            success: function (result) {
+                CustomersData = eval("(" + result + ")");
+                f_gridbind();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    function f_gridbind() {
+        grid = $("#Grid").ligerGrid({
+            columns: [
+                 { display: 'parameterID', name: 'parameterID', minWidth: 60, hide: 1 },
+                  { display: '参数型号', name: 'templetname', align: 'left', width: 120 },
+                { display: '型号ID', name: 'templetID', minWidth: 60, hide: 1 },
+                 { display: '模块名称', name: 'ModuleName', align: 'left', width: 120 },
+                { display: '模块ID', name: 'ModuleID', minWidth: 60, hide: 1 },
+
+                { display: '参数名称', name: 'parametername', align: 'left', width: 120 },
+                { display: '参数类型', name: 'parametertypeid', minWidth: 60, hide: 1 },
+                 { display: '参数类型', name: 'parametertypename', minWidth: 60 },
+                { display: '数据类型', name: 'datatype' },
+                { display: '参数起始位', name: 'datastartbit',type: 'int', minWidth: 100 },
+                 { display: '参数长度', name: 'datalen', align: 'left', width: 80 },
+                { display: '数据bit位', name: 'databit', minWidth: 60 },
+                { display: '设置命令', name: 'code' },
+                { display: '发送命令', name: 'cmd', minWidth: 140 },
+
+                { display: '发送ID', name: 'SenderID', minWidth: 80 },
+                 { display: '详情显示', name: 'TargetID' },
+                { display: '单位', name: 'unit' },
+                { display: '数据斜率', name: 'k', minWidth: 140 },
+                { display: '数据截距', name: 'b', minWidth: 140 },
+                 { display: '默认值', name: 'DefaultValue', minWidth: 60 },
+                 {
+                     display: '数据简表', width: 50, name: 'IsSave', type: 'int',
+                     render: function (item) {
+                         if (parseInt(item.IsSave) == 1) return '是';
+                         return '否';
+                     }
+                 },
+                { display: '用户权限', name: 'usertype', minWidth: 140, hide: 1 },
+                 { display: '用户权限', name: 'typename', minWidth: 140 },
+                 { display: '参数解析', name: 'Memo', minWidth: 140 },
+                 { display: '报警上限', name: 'HighVal', minWidth: 140 },
+                 { display: '报警下限', name: 'LowVal', minWidth: 140 },
+            ], pageSize: 15,
+            data: CustomersData,
+            width: '100%', height: '100%', checkbox: true,
+            toolbar: {
+                items: [
+                { text: '增加', click: itemclick, icon: 'add' },
+                { line: true },
+                { text: '修改', click: itemclick, icon: 'modify' },
+                { line: true },
+                { text: '删除', click: itemclick, icon: 'delete' },
+                { line: true },
+                { text: '刷新', click: itemclick, icon: 'refresh' }
+                ]
+            }
+        });
+
+
+        $("#pageloading").hide();
+    }
+    function itemclick(item) {
+        if (item.text == "增加") {
+            $.ligerDialog.open({ width: 850, height: 550, url: 'ParameterEdit.html?Uid=', title: "编辑参数" });
+        }
+        if (item.text == "修改") {
+            var rows = grid.getCheckedRows();
+            if (rows.length == 1) {
+                var str = "";
+                var tID = "";
+                $(rows).each(function () {
+                    str += this.parameterID;
+                    tID = this.templetID;
+                });
+
+                $.ligerDialog.open({ width: 850, height: 550, url: 'ParameterEdit.html?Uid=' + str + '&templetID=' + tID, title: "编辑参数" });
+            }
+            else {
+                $.ligerDialog.alert('请选择一条记录修改!');
+            }
+        }
+        if (item.text == "删除") {
+            var rows = grid.getCheckedRows();
+            if (rows.length == 1) {
+                var str = "";
+                var tID = "";
+                $(rows).each(function () {
+                    str += this.parameterID;
+                    tID = this.templetID;
+                });
+                Del(str,tID);
+            }
+            else {
+                $.ligerDialog.alert('请选择一行删除!');
+            }
+        }
+        if (item.text == "刷新") {
+            getData();
+        }
+        // alert(item.text);
+    }
+    function f_search() {
+        grid.options.data = CustomersData;
+        grid.loadData(f_getWhere());
+    }
+    function f_getWhere() {
+        if (!grid) return null;
+        var clause = function (rowdata, rowindex) {
+
+            var key1 = $("#txtSearch").val();
+            var key = $("#ddlmodule").val();
+            var key2 = $("#ddlSearch").val();
+            var where;
+            if (key == "" && key1 == "" && key2 == "") {
+                return rowdata.name.indexOf(key) > -1;
+            }
+            if (key != "") {
+                where = (rowdata.ModuleID.indexOf(key) > -1);
+            }
+            if (key2 != "") {
+                where = where && (rowdata.templetID.indexOf(key2) > -1);
+            }
+            if (key1 != "") {
+                where = where && rowdata.parametername.indexOf(key1) > -1;
+            }
+
+            return where;
+            
+        };
+        return clause;
+    }
+    ///删除
+    function Del(str, tID) {
+        if (str != "") {
+            swal({
+                title: "您确定要删除这条信息吗",
+                text: "删除后将无法恢复，请谨慎操作！",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "不删除",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "删除",
+                closeOnConfirm: false
+            }, function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/Parameter/DelParameter?Uid=" + str + "&tID=" + tID,
+                    dataType: "json",
+                    success: function (result) {
+                        if (result != "" && result == "OK") {
+                            swal("删除成功！", "您已经永久删除了这条信息。", "success");
+                            getData();
+                        }
+                    },
+                    error: function (error) {
+                        $.ligerDialog.alert('删除异常!');
+                    }
+                });
+            });
+        }
+    }
+  
+</script>

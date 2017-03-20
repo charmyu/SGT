@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>ichartjs </title>
+        <script type="text/javascript" src="js/ichart/ichart.1.2.min.js"></script>
+        <link rel="stylesheet" href="js/ichart/css/demo.css" type="text/css" />
+		<script type="text/javascript">
+		$(function() {
+			var data = [
+			        	{ name: '2016-12-01', value: 40.59, color: '#3A68D3' },
+			        	{ name: '2016-12-02', value: 19.1, color: '#3895BF' },
+			        	{ name: '2016-12-03', value: 13.68, color: '#2A962A' },
+			        	{ name: '2016-12-03', value: 10.91, color: '#4267BE' },
+			        	{ name: '2016-12-04', value: 6.19, color: '#9F2626' },
+			        	{ name: '2016-12-05', value: 1.48, color: '#4F7DE7' },
+			        	{ name: '2016-12-06', value: 1.35, color: '#7A3C9C' },
+			        	{ name: '2016-12-07', value: 1.27, color: '#B97944' },
+			        	{ name: '2016-12-08', value: 1.18, color: '#782A56' },
+			        	{ name: '2016-12-09', value: 4.26, color: '#484848' }
+		        	];
+
+
+			var chart = new iChart.Column3D({
+				render : 'canvasDiv',
+				data: data,
+				title : {
+					text : '2016年12月',
+					color : '#3e576f'
+				},
+				width : 900,
+				height : 400,
+				padding: 20,
+				shadow: true,
+				shadow_color:'#080808',
+				background_color:'#eceeef',
+				sub_option:{
+					label : {
+						color : '#2c2e2a',
+						padding : 10
+					}
+				},
+				coordinate:{
+					left_board:false,
+					scale:[{
+						 position:'left',
+						 start_scale:0,
+						 end_scale:50,
+						 scale_space:5,
+						 listeners:{
+								parseText:function(t,x,y){
+									return {text:t+"%  "}
+								}
+							}
+					}],
+				},
+				legend: {
+					background_color:iChart.toRgba('#213e49',0.6),
+					border:{radius:5},
+					enable: true,
+					align: 'right',
+					valign: 'top',
+					row: 'max',
+					color:'#fefefe',
+					column: 1,
+					line_height: 15
+				},
+				tip : {
+					enable : true
+				}
+			});
+			chart.draw();
+		});
+	</script>
+	</head>
+	<body style="text-align :center">
+		<div id='canvasDiv'></div>
+		
+	</body>
+</html>
